@@ -122,7 +122,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		PROD("prodssopoc",".ops1.ca-east.mybluemix.net", "/metadata/idp_metadata/federationmetadata.xml"), 					// Hitting Prod from the dedicated env
 		PUBLIC_PROD("SSoPOC",".mybluemix.net", "/metadata/idp_metadata/prod_federationmetadata.xml"),						// Hitting Prod from Public env
 //		PUBLIC_NEW_PROD("SSoPOC",".mybluemix.net", "/metadata/idp_metadata/new_federationmetadata.xml");					// Hitting new ADFS Prod from Public env
-		PUBLIC_NEW_PROD("adfs",".hcn.fun:40443", "/federationmetadata/2007-06/federationmetadata.xml");					// Hitting new ADFS Prod from Public env
+//		PUBLIC_NEW_PROD("adfs",".hcn.fun:40443", "/federationmetadata/2007-06/federationmetadata.xml");					// Hitting new ADFS Prod from Public env
+		PUBLIC_NEW_PROD("boot-saml-sample",".herokuapp.com", "/federationmetadata/2007-06/federationmetadata.xml");					// Hitting new ADFS Prod from Public env
 
 		private final String applicationName;
 		private final String applicationPrefix;
