@@ -1,5 +1,5 @@
 cd \
-cd C:\_Projects\BlueMix\git\spring-boot-security-saml
+cd F:\developsoft\other\KC_Extend\adfs\spring-boot-security-saml-master
 call mvn clean
 call mvn package -U
 cf logout

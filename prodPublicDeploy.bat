@@ -2,7 +2,7 @@ Setlocal
 SET HTTP_PROXY=204.40.194.129:3128
 SET HTTPS_PROXY=204.40.194.129:3128
 cd \
-cd C:\_Projects\BlueMix\git\spring-boot-security-saml
+cd F:\developsoft\other\KC_Extend\adfs\spring-boot-security-saml-master
 call mvn clean
 call mvn package -U
 cf logout
