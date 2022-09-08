@@ -249,6 +249,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     
     // Central storage of cryptographic keys
+    //TODO: 2022/9/8  key、password 是否有用
     @Bean
     public KeyManager keyManager() {
         DefaultResourceLoader loader = new DefaultResourceLoader();
@@ -302,7 +303,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         samlEntryPoint.setDefaultProfileOptions(defaultWebSSOProfileOptions());
         return samlEntryPoint;
     }
-    
+
+    //TODO: 2022/9/8  SigningKey、EncryptionKey 是否有用
     @Bean
     public ExtendedMetadata extendedSignedMetadata() {
     	ExtendedMetadata extendedMetadata = new ExtendedMetadata();
@@ -316,6 +318,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     
     // Setup advanced info about metadata
+    //TODO: 2022/9/8  SigningKey、EncryptionKey 是否有用
     @Bean
     public ExtendedMetadata extendedMetadata() {
     	ExtendedMetadata extendedMetadata = new ExtendedMetadata();
@@ -335,7 +338,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         idpDiscovery.setIdpSelectionPath("/saml/idpSelection");
         return idpDiscovery;
     }
-    
+
+    //TODO: 2022/9/8  调试配置文件
 	@Bean
 	@Qualifier("idp-adfs")
 	public ExtendedMetadataDelegate adfsExtendedMetadataProvider() throws MetadataProviderException {
