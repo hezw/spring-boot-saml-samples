@@ -17,6 +17,14 @@ Spring SAML Extension allows seamless inclusion of SAML 2.0 Service Provider cap
 
 ---------
 
+#### 一键部署
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+> 如果被heroku 提示错误，请用 github action 来部署。
+
+> 部署成功后，可以先用浏览器访问 https://boot-saml-sample.herokuapp.com， 查看页面是否能正常访问。会显示一个随机的维基百科页面。
+
 ## Project description
 
 Currently Spring Security SAML module doesn't provide a starter for Spring Boot. Moreover, its configuration is XML-based as of this writing. The aim of this project is to explain how to develop a **Service Provider (SP)** which uses **Spring Boot** (`1.4.0.RELEASE`) and **Spring Security SAML Extension** (`1.0.2.RELEASE`), by defining an annotation-based configuration (**Java Configuration**). **Thymeleaf** is also used as template engine.
