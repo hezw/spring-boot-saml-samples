@@ -23,7 +23,7 @@ Spring SAML Extension allows seamless inclusion of SAML 2.0 Service Provider cap
 
 > 如果被heroku 提示错误，请用 github action 来部署。
 
-> 部署成功后，可以先用浏览器访问 https://boot-saml-sample.herokuapp.com， 查看页面是否能正常访问。会显示一个随机的维基百科页面。
+> 部署成功后，可以先用浏览器访问 https://boot-saml-sample.herokuapp.com  ， 查看页面是否能正常访问。会显示一个随机的维基百科页面。
 
 ## Project description
 
