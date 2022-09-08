@@ -19,7 +19,7 @@ Spring SAML Extension allows seamless inclusion of SAML 2.0 Service Provider cap
 
 #### 一键部署
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/apps/boot-saml-sample/deploy/github)
 
 > 如果被heroku 提示错误，请用 github action 来部署。
 
