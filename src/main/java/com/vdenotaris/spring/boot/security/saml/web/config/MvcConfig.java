@@ -36,6 +36,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/error").setViewName("error");
+        registry.addViewController("/landing").setViewName("landing");
     }
     
     @Override

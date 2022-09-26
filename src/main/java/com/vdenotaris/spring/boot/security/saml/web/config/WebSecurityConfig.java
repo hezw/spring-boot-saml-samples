@@ -16,20 +16,14 @@
 
 package com.vdenotaris.spring.boot.security.saml.web.config;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-
-//import org.apache.catalina.Context;
+import com.vdenotaris.spring.boot.security.saml.web.CustomSAMLBootstrap;
+import com.vdenotaris.spring.boot.security.saml.web.SAMLConfigurationBean;
+import com.vdenotaris.spring.boot.security.saml.web.SAMLConfigurationBean.SignatureAlgorithm;
+import com.vdenotaris.spring.boot.security.saml.web.core.SAMLUserDetailsServiceImpl;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-//import org.apache.tomcat.util.descriptor.web.SecurityCollection;
-//import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
@@ -41,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
-//import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -53,47 +47,19 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.saml.SAMLAuthenticationProvider;
-import org.springframework.security.saml.SAMLBootstrap;
-import org.springframework.security.saml.SAMLDiscovery;
-import org.springframework.security.saml.SAMLEntryPoint;
-import org.springframework.security.saml.SAMLLogoutFilter;
-import org.springframework.security.saml.SAMLLogoutProcessingFilter;
-import org.springframework.security.saml.SAMLProcessingFilter;
-import org.springframework.security.saml.SAMLWebSSOHoKProcessingFilter;
+import org.springframework.security.saml.*;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
 import org.springframework.security.saml.context.SAMLContextProviderLB;
 import org.springframework.security.saml.key.JKSKeyManager;
 import org.springframework.security.saml.key.KeyManager;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
-import org.springframework.security.saml.metadata.CachingMetadataManager;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.ExtendedMetadataDelegate;
-import org.springframework.security.saml.metadata.MetadataDisplayFilter;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
+import org.springframework.security.saml.metadata.*;
 import org.springframework.security.saml.parser.ParserPoolHolder;
-import org.springframework.security.saml.processor.HTTPArtifactBinding;
-import org.springframework.security.saml.processor.HTTPPAOS11Binding;
-import org.springframework.security.saml.processor.HTTPPostBinding;
-import org.springframework.security.saml.processor.HTTPRedirectDeflateBinding;
-import org.springframework.security.saml.processor.HTTPSOAP11Binding;
-import org.springframework.security.saml.processor.SAMLBinding;
-import org.springframework.security.saml.processor.SAMLProcessorImpl;
+import org.springframework.security.saml.processor.*;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolConfigurer;
 import org.springframework.security.saml.trust.httpclient.TLSProtocolSocketFactory;
 import org.springframework.security.saml.util.VelocityFactory;
-import org.springframework.security.saml.websso.ArtifactResolutionProfile;
-import org.springframework.security.saml.websso.ArtifactResolutionProfileImpl;
-import org.springframework.security.saml.websso.SingleLogoutProfile;
-import org.springframework.security.saml.websso.SingleLogoutProfileImpl;
-import org.springframework.security.saml.websso.WebSSOProfile;
-import org.springframework.security.saml.websso.WebSSOProfileConsumer;
-import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
-import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
-import org.springframework.security.saml.websso.WebSSOProfileECPImpl;
-import org.springframework.security.saml.websso.WebSSOProfileImpl;
-import org.springframework.security.saml.websso.WebSSOProfileOptions;
+import org.springframework.security.saml.websso.*;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -106,16 +72,26 @@ import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuc
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.vdenotaris.spring.boot.security.saml.web.CustomSAMLBootstrap;
-import com.vdenotaris.spring.boot.security.saml.web.SAMLConfigurationBean;
-import com.vdenotaris.spring.boot.security.saml.web.SAMLConfigurationBean.SignatureAlgorithm;
-import com.vdenotaris.spring.boot.security.saml.web.core.SAMLUserDetailsServiceImpl;
- 
+import java.util.*;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger LOG = LoggerFactory.getLogger(WebSecurityConfig.class);
+
+	@Value("${app.env:boot-saml-sample}")
+	private String appEnv;
+
+    private final String metadataKey="rektec";
+
+
+    private ENVIRONMENT getEnvironment(){
+        return ENVIRONMENT.getEnumByAppName(appEnv);
+    }
+    @Autowired
+    private SAMLUserDetailsServiceImpl samlUserDetailsServiceImpl;
+
 	public enum ENVIRONMENT {
 		
 		UAT("dcjavaspringsaml2sample", ".ops1.ca-east.mybluemix.net", "/metadata/idp_metadata/federationmetadata.xml"),  	// Hitting UAT from the dedicated
@@ -123,7 +99,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		PUBLIC_PROD("SSoPOC",".mybluemix.net", "/metadata/idp_metadata/prod_federationmetadata.xml"),						// Hitting Prod from Public env
 //		PUBLIC_NEW_PROD("SSoPOC",".mybluemix.net", "/metadata/idp_metadata/new_federationmetadata.xml");					// Hitting new ADFS Prod from Public env
 //		PUBLIC_NEW_PROD("adfs",".hcn.fun:40443", "/federationmetadata/2007-06/federationmetadata.xml");					// Hitting new ADFS Prod from Public env
-		PUBLIC_NEW_PROD("boot-saml-sample",".herokuapp.com", "/federationmetadata/2007-06/federationmetadata.xml");					// Hitting new ADFS Prod from Public env
+		PUBLIC_NEW_TEST("boot-saml-sample",".herokuapp.com", "/federationmetadata/2007-06/federationmetadata.xml"),				// Hitting new ADFS Prod from Public env
+		PUBLIC_NEW_PROD("javaapp",".hcn.fun:41443", "/federationmetadata/2007-06/federationmetadata.xml");					// Hitting new ADFS Prod from Public env
 
 		private final String applicationName;
 		private final String applicationPrefix;
@@ -145,12 +122,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		String getFullAppName() {
 			return (getAppName()+getAppPrefix());
 		}
+        public static ENVIRONMENT getEnumByAppName(String appName){
+            for (ENVIRONMENT env: ENVIRONMENT.values()) {
+                if(env.applicationName.equals(appName)){
+                    return env;
+                }
+            }
+            return null;
+        }
 	}
-	private final ENVIRONMENT environment = ENVIRONMENT.PUBLIC_NEW_PROD;
-    
-	@Autowired
-    private SAMLUserDetailsServiceImpl samlUserDetailsServiceImpl;
-     
+
     // Initialization of the velocity engine
     @Bean
     public VelocityEngine velocityEngine() {
@@ -194,7 +175,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public SAMLContextProviderImpl contextProvider() {
     	SAMLContextProviderLB samlContextProviderLB  = new SAMLContextProviderLB();
     	samlContextProviderLB.setScheme("https");
-        samlContextProviderLB.setServerName(environment.getFullAppName());
+        samlContextProviderLB.setServerName(getEnvironment().getFullAppName());
     	samlContextProviderLB.setServerPort(443);
     	samlContextProviderLB.setIncludeServerPortInRequestURL(false);
     	samlContextProviderLB.setContextPath("/");
@@ -255,10 +236,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         DefaultResourceLoader loader = new DefaultResourceLoader();
         Resource storeFile = loader.getResource("classpath:/saml/samlKeystore.jks");
         //ASK FOR THE DETALS
-        String storePass = "nalle123";
+        /*String storePass = "nalle123";
         Map<String, String> passwords = new HashMap<String, String>();
-        passwords.put("adfssigning3", "Meaghan1");
-        String defaultKey = "adfssigning3";
+        passwords.put("adfssigning3", "nalle123");
+        String defaultKey = "adfssigning3";*/
+        String storePass = "p@ssw0rd";
+        String defaultKey = "rektec";
+        Map<String, String> passwords = new HashMap<>();
+        passwords.put(defaultKey, storePass);
         return new JKSKeyManager(storeFile, storePass, passwords, defaultKey);
     }
  
@@ -311,8 +296,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	extendedMetadata.setSignMetadata(false);
     	extendedMetadata.setSslHostnameVerification("allowAll");
     	extendedMetadata.setSigningAlgorithm("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-    	extendedMetadata.setSigningKey("adfssigning3");
-    	extendedMetadata.setEncryptionKey("adfssigning3");
+    	extendedMetadata.setSigningKey(metadataKey);
+    	extendedMetadata.setEncryptionKey(metadataKey);
     	extendedMetadata.setSecurityProfile("metaiop");
     	return extendedMetadata;
     }
@@ -325,8 +310,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    	extendedMetadata.setIdpDiscoveryEnabled(true); 
     	extendedMetadata.setSignMetadata(false);
     	extendedMetadata.setSigningAlgorithm("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-    	extendedMetadata.setSigningKey("adfssigning3");
-    	extendedMetadata.setEncryptionKey("adfssigning3");
+    	extendedMetadata.setSigningKey(metadataKey);//ssocircle
+    	extendedMetadata.setEncryptionKey(metadataKey);
     	extendedMetadata.setSecurityProfile("metaiop");
     	return extendedMetadata;
     }
@@ -346,7 +331,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		Timer backgroundTaskTimer = new Timer(true);
 		ClasspathResource metadata = null;
         try {
-        	metadata = new ClasspathResource(environment.getMetadataPath());
+        	metadata = new ClasspathResource(getEnvironment().getMetadataPath());
         } catch (Exception e) {
         	LOG.error("Couldn't load federationmetadata.xml.");
         }
@@ -376,7 +361,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public MetadataGenerator metadataGenerator() {
         MetadataGenerator metadataGenerator = new MetadataGenerator();
         StringBuilder theURL = new StringBuilder("https://");
-        theURL.append(environment.getFullAppName());
+        theURL.append(getEnvironment().getFullAppName());
         metadataGenerator.setEntityId(theURL.toString());
         metadataGenerator.setExtendedMetadata(extendedSignedMetadata());
         metadataGenerator.setEntityBaseURL(theURL.toString());
@@ -579,11 +564,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/").permitAll()
             .antMatchers("/error").permitAll()
             .antMatchers("/saml/**").permitAll()
+            .antMatchers("/federationmetadata/**").permitAll()
             .anyRequest().authenticated();
-        
+
         http.logout().logoutSuccessUrl("/");
     }
- 
+
+
     /**
      * Sets a custom authentication provider.
      * 

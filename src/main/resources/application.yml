@@ -1,0 +1,17 @@
+spring:
+  mvc:
+    static-path-pattern: /**
+  resources:
+     static-locations: classpath:/
+
+#app.env=boot-saml-sample
+app:
+  #env: javaapp
+  env: boot-saml-sample
+
+#server:
+#  port: 443
+#  ssl:
+#    key-store: classpath:8439605_javaapp.hcn.fun.pfx
+#    key-store-type: PKCS12
+#    key-store-password: LY3g45YL
