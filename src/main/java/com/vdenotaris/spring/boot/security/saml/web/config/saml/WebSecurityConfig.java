@@ -14,11 +14,9 @@
  * limitations under the License. 
  */
 
-package com.vdenotaris.spring.boot.security.saml.web.config;
+package com.vdenotaris.spring.boot.security.saml.web.config.saml;
 
-import com.vdenotaris.spring.boot.security.saml.web.CustomSAMLBootstrap;
-import com.vdenotaris.spring.boot.security.saml.web.SAMLConfigurationBean;
-import com.vdenotaris.spring.boot.security.saml.web.SAMLConfigurationBean.SignatureAlgorithm;
+import com.vdenotaris.spring.boot.security.saml.web.config.saml.SAMLConfigurationBean.SignatureAlgorithm;
 import com.vdenotaris.spring.boot.security.saml.web.core.SAMLUserDetailsServiceImpl;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -83,7 +81,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Value("${app.env:boot-saml-sample}")
 	private String appEnv;
 
-    private final String metadataKey="rektec";
+    private final String metadataKey="rektec"; //证书别名
+    private final String metadataPassword="p@ssw0rd"; //证书密码
 
 
     private ENVIRONMENT getEnvironment(){
@@ -235,13 +234,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public KeyManager keyManager() {
         DefaultResourceLoader loader = new DefaultResourceLoader();
         Resource storeFile = loader.getResource("classpath:/saml/samlKeystore.jks");
-        //ASK FOR THE DETALS
-        /*String storePass = "nalle123";
-        Map<String, String> passwords = new HashMap<String, String>();
-        passwords.put("adfssigning3", "nalle123");
-        String defaultKey = "adfssigning3";*/
-        String storePass = "p@ssw0rd";
-        String defaultKey = "rektec";
+        String storePass = metadataPassword;
+        String defaultKey = metadataKey;
         Map<String, String> passwords = new HashMap<>();
         passwords.put(defaultKey, storePass);
         return new JKSKeyManager(storeFile, storePass, passwords, defaultKey);

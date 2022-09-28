@@ -14,7 +14,7 @@
  * limitations under the License. 
  */
 
-package com.vdenotaris.spring.boot.security.saml.web.config;
+package com.vdenotaris.spring.boot.security.saml.web.config.saml;
 
 import java.util.List;
 

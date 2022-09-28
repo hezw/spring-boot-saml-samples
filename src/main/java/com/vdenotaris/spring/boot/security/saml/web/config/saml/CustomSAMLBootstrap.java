@@ -1,4 +1,4 @@
-package com.vdenotaris.spring.boot.security.saml.web;
+package com.vdenotaris.spring.boot.security.saml.web.config.saml;
 
 import org.opensaml.Configuration;
 import org.opensaml.xml.security.BasicSecurityConfiguration;
